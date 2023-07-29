@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2113.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #df6107; -webkit-text-stroke: #df6107; background-color: #f0f2f4}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #2b363d; -webkit-text-stroke: #2b363d; background-color: #f0f2f4; min-height: 16.0px}
+    p.p3 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #9ba9ba; -webkit-text-stroke: #9ba9ba; background-color: #f0f2f4}
+    p.p4 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #279f40; -webkit-text-stroke: #279f40; background-color: #f0f2f4}
+    p.p5 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #f52247; -webkit-text-stroke: #f52247; background-color: #f0f2f4}
+    p.p6 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Monaco; color: #2b363d; -webkit-text-stroke: #2b363d; background-color: #f0f2f4}
+    span.s1 {font-kerning: none; color: #2b363d; -webkit-text-stroke: 0px #2b363d}
+    span.s2 {font-kerning: none; color: #f52247; -webkit-text-stroke: 0px #f52247}
+    span.s3 {font-kerning: none}
+    span.s4 {font-kerning: none; color: #279f40; -webkit-text-stroke: 0px #279f40}
+    span.s5 {font-kerning: none; color: #df6107; -webkit-text-stroke: 0px #df6107}
+    span.s6 {font-kerning: none; color: #7922e6; -webkit-text-stroke: 0px #7922e6}
+    span.s7 {font-kerning: none; color: #e65744; -webkit-text-stroke: 0px #e65744}
+    span.s8 {font-kerning: none; color: #da7507; -webkit-text-stroke: 0px #da7507}
+  </style>
+</head>
+<body>
+<p class="p1"><span class="s1">&lt;</span><span class="s2">meta</span><span class="s1"> </span><span class="s3">charset</span><span class="s1">=</span><span class="s4">"utf-8"</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s3">&lt;!-- Load d3.js --&gt;</span></p>
+<p class="p4"><span class="s1">&lt;</span><span class="s2">script</span><span class="s1"> </span><span class="s5">src</span><span class="s1">=</span><span class="s3">"https://d3js.org/d3.v4.js"</span><span class="s1">&gt;&lt;/</span><span class="s2">script</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s3">&lt;!-- Create a div where the graph will take place --&gt;</span></p>
+<p class="p5"><span class="s1">&lt;</span><span class="s3">div</span><span class="s1">&gt;</span></p>
+<p class="p6"><span class="s3">World highest paid athletes by year (1990-2024)</span></p>
+<p class="p6"><span class="s3">&lt;/</span><span class="s2">div</span><span class="s3">&gt;</span></p>
+<p class="p4"><span class="s1">&lt;</span><span class="s2">div</span><span class="s1"> </span><span class="s5">id</span><span class="s1">=</span><span class="s3">"my_dataviz"</span><span class="s1">&gt;&lt;/</span><span class="s2">div</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p5"><span class="s1">&lt;</span><span class="s3">script</span><span class="s1">&gt;</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p6"><span class="s6">var</span><span class="s3"> margin = {</span><span class="s5">top</span><span class="s3">: </span><span class="s7">20</span><span class="s3">, </span><span class="s5">right</span><span class="s3">: </span><span class="s7">30</span><span class="s3">, </span><span class="s5">bottom</span><span class="s3">: </span><span class="s7">40</span><span class="s3">, </span><span class="s5">left</span><span class="s3">: </span><span class="s7">90</span><span class="s3">},</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>width = </span><span class="s7">460</span><span class="s3"> - margin.left - margin.right,</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>height = </span><span class="s7">600</span><span class="s3"> - margin.top - margin.bottom;</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s3">// append the svg object to the body of the page</span></p>
+<p class="p6"><span class="s6">var</span><span class="s3"> svg = d3.select(</span><span class="s4">"#my_dataviz"</span><span class="s3">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>.append(</span><span class="s4">"svg"</span><span class="s3">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"width"</span><span class="s3">, width + margin.left + margin.right)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"height"</span><span class="s3">, height + margin.top + margin.bottom)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>.append(</span><span class="s4">"g"</span><span class="s3">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"transform"</span><span class="s3">,</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">          </span></span><span class="s4">"translate("</span><span class="s3"> + margin.left + </span><span class="s4">","</span><span class="s3"> + margin.top + </span><span class="s4">")"</span><span class="s3">);</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s3">// Parse the Data</span></p>
+<p class="p4"><span class="s1">d3.csv(</span><span class="s3">"https://raw.githubusercontent.com/spravin123/narrativeviz/master/forbesathletesv2.csv"</span><span class="s1">, </span><span class="s6">function</span><span class="s1">(</span><span class="s8">data</span><span class="s1">) {</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>data = data.filter(</span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">)<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>{<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">        </span></span><span class="s6">if</span><span class="s3">( d[</span><span class="s4">"Year"</span><span class="s3">] == </span><span class="s4">"1990"</span><span class="s3">)<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">        </span>{<span class="Apple-converted-space"> </span></span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">            </span></span><span class="s6">return</span><span class="s3"> d;</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">        </span>}<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>});</span></p>
+<p class="p2"><span class="s3"><span class="Apple-converted-space">  </span></span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span></span><span class="s3">// Add X axis</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span></span><span class="s6">var</span><span class="s3"> x = d3.scaleLinear()</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.domain([</span><span class="s7">0</span><span class="s3">, </span><span class="s7">30</span><span class="s3">])</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.range([ </span><span class="s7">0</span><span class="s3">, width]);</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>svg.append(</span><span class="s4">"g"</span><span class="s3">)</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">    </span>.attr(</span><span class="s3">"transform"</span><span class="s1">, </span><span class="s3">"translate(0,"</span><span class="s1"> + height + </span><span class="s3">")"</span><span class="s1">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.call(d3.axisBottom(x))</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.selectAll(</span><span class="s4">"text"</span><span class="s3">)</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">      </span>.attr(</span><span class="s3">"transform"</span><span class="s1">, </span><span class="s3">"translate(-10,0)rotate(-45)"</span><span class="s1">)</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">      </span>.style(</span><span class="s3">"text-anchor"</span><span class="s1">, </span><span class="s3">"end"</span><span class="s1">);</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span></span><span class="s3">// Y axis</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span></span><span class="s6">var</span><span class="s3"> y = d3.scaleBand()</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.range([ </span><span class="s7">0</span><span class="s3">, height ])</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.domain(data.map(</span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">) { </span><span class="s6">return</span><span class="s3"> d.Name; }))</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.padding(</span><span class="s7">.1</span><span class="s3">);</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>svg.append(</span><span class="s4">"g"</span><span class="s3">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.call(d3.axisLeft(y))</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p3"><span class="s1"><span class="Apple-converted-space">  </span></span><span class="s3">//Bars</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">  </span>svg.selectAll(</span><span class="s4">"myRect"</span><span class="s3">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.data(data)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.enter()</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.append(</span><span class="s4">"rect"</span><span class="s3">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"x"</span><span class="s3">, x(</span><span class="s7">0</span><span class="s3">) )</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"y"</span><span class="s3">, </span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">) { </span><span class="s6">return</span><span class="s3"> y(d.Name); })</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"width"</span><span class="s3">, </span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">) { </span><span class="s6">return</span><span class="s3"> x(d.Earnings); })</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.attr(</span><span class="s4">"height"</span><span class="s3">, y.bandwidth() )</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">    </span>.attr(</span><span class="s3">"fill"</span><span class="s1">, </span><span class="s3">"#5C5CFF"</span><span class="s1">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">    </span>.append(</span><span class="s4">"text"</span><span class="s3">)</span></p>
+<p class="p4"><span class="s1"><span class="Apple-converted-space">    </span>.style(</span><span class="s3">"font-family"</span><span class="s1">, </span><span class="s3">"Arial"</span><span class="s1">)</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space">   </span>.attr(</span><span class="s4">"x"</span><span class="s3">, </span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">){ </span><span class="s6">return</span><span class="s3"> x(</span><span class="s8">parseFloat</span><span class="s3">(d[</span><span class="s4">"Earnings"</span><span class="s3">])) ;<span class="Apple-converted-space">  </span>})</span></p>
+<p class="p6"><span class="s3"><span class="Apple-converted-space"> </span>.attr(</span><span class="s4">"y"</span><span class="s3">, </span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">){ </span><span class="s6">return</span><span class="s3"> yScale(d[</span><span class="s4">"Name"</span><span class="s3">]) + y.rangeBand()/</span><span class="s7">2</span><span class="s3">; })</span></p>
+<p class="p6"><span class="s3">.text(</span><span class="s6">function</span><span class="s3">(</span><span class="s8">d</span><span class="s3">){ </span><span class="s6">return</span><span class="s3"> </span><span class="s4">"--"</span><span class="s3">; });<span class="Apple-converted-space"> </span></span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p6"><span class="s3">})</span></p>
+<p class="p2"><span class="s3"></span><br></p>
+<p class="p5"><span class="s1">&lt;/</span><span class="s3">script</span><span class="s1">&gt;</span></p>
+</body>
+</html>

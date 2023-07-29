@@ -1,0 +1,611 @@
+<html>
+    <style>
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v4.js"></script>
+<!-- Load d3-annotation -->
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+
+    <!-- Create a div where the graph will take place -->
+    <div>
+    <p></p>
+    <h3 style="font-family:Arial">Sports with the world highest paid athletes by year range (1990-2019)</h3>
+    </div>
+    <div id="descText" style="height:80px; width:800px; font: 1em Fira Sans, sans-serif;">
+        Boxing and Golf has for most years dominated the sports world as the 
+        sports with the most valued players in the world, this is reflected in the year wise 
+        break down of highest paid sport athletes in those sports area in a given year range.  
+        Since the start of data collection - starting with the 1990's  
+        the highest paid athletes for most years have either played in the field of Boxing or played Golf. 
+    </div>
+    <div id="legend"></div>
+    <button type="button" class="button" onclick="changeYearTo1990()">Slide 1 - 1990 to 1992</button>
+    <button type="button" class="button" onclick="changeYearTo1993()">Slide 2 - 1993 to 1995</button>
+    <button type="button" class="button" onclick="changeYearTo1996()">Slide 3 - 1996</button>
+    <button type="button" class="button" onclick="changeYearTo2001()">Slide 4 - 2001 to 2011</button>
+    <button type="button" class="button" onclick="changeYearTo2011()">Slide 5 - 2011 to 2019</button>
+    <p/>
+    <div style="height:30px; width:800px;"">Filter highest paid athletes by a specific Sport:<span style="text-align: left;" id="dropdown_container"></span></div>
+    <p/>
+    <div style="height:30px; width:800px;"">Change Y axis:<span style="text-align: left;" id="yaxis_container">
+    <select id="yaxis" onchange="reDraw(this.value)">
+        <option value="">-</option>
+        <option value="Sport">Sport</option>
+    </select></span></div>
+    <p/>
+    <div style="height:30px; width:800px;display: none;" id="slide0dd">
+        Subfilter to change from years (1990 - 1992) <span style="text-align: left;" id="slide0Dd">
+        <select id="innerYear" onchange="changeDD(this.value)">
+            <option value="">-</option>
+            <option value="1991">1991</option>
+            <option value="1992">1992</option>
+        </select></span>
+    </div>
+    <div style="height:30px; width:800px;display: none;" id="slide1dd">
+        Subfilter to change from years (1993 - 1995) <span style="text-align: left;" id="slide2Dd">
+        <select id="innerYear" onchange="changeDD(this.value)">
+            <option value="">-</option>
+            <option value="1993">1993</option>
+            <option value="1994">1994</option>
+            <option value="1995">1995</option>
+        </select></span>
+    </div>
+    <div style="height:30px; width:800px;display: none;" id="slide2dd">
+        Subfilter to change from years (2001 - 2011) <span style="text-align: left;" id="slide2Dd">
+        <select id="innerYear2" onchange="changeDD(this.value)">
+            <option value="">-</option> 
+            <option value="2002">2002</option>
+            <option value="2003">2003</option>
+            <option value="2004">2004</option>
+            <option value="2005">2005</option>
+            <option value="2006">2006</option>
+            <option value="2007">2007</option>
+            <option value="2008">2008</option>
+            <option value="2009">2009</option>
+            <option value="2010">2010</option>
+            <option value="2011">2011</option>
+        </select></span>
+    </div>
+    <div style="height:30px; width:800px;display: none;" id="slide3dd">
+        Subfilter to change from years (2011 - 2019) <span style="text-align: left;" id="slide2Dd">
+        <select id="innerYear3" onchange="changeDD(this.value)">
+            <option value="">-</option> 
+            <option value="2012">2012</option>
+            <option value="2013">2013</option>
+            <option value="2014">2014</option>
+            <option value="2015">2015</option>
+            <option value="2016">2016</option>
+            <option value="2017">2017</option>
+            <option value="2018">2018</option>
+            <option value="2019">2019</option>
+        </select></span>
+    </div>
+    <div>Current Year: <span id="currYear"></span></div>
+    <div id="my_dataviz" width="800" height="600"></div>
+    <script>
+    var tooplTipDiv = d3.select("body").append("div")   
+                            .attr("id", "myTooltip")               
+                            .style("opacity", 0);
+                
+    var margin = {top: 20, right: 150, bottom: 40, left: 190},
+        width = 1200 - margin.left - margin.right,
+        height = 600 - margin.top - margin.bottom;
+
+    var svg = d3.select("#my_dataviz")
+                .append("svg")
+                    .attr("width", width)
+                    .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                    .attr("transform",
+                        "translate(" + margin.left + "," + margin.top + ")");
+
+
+    reDraw();
+                       
+    var currYear = "1990";
+
+    var slideId = 0;
+
+
+    
+
+    function changeDD(year) {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.selectAll(".annotation-group > *").remove(); 
+        currYear = year;
+        //slideId = 0;
+        reDraw();
+    }
+
+    function changeYearTo1990() {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.selectAll(".annotation-group > *").remove(); 
+        d3.select("#descText").html("Boxing and Golf has for most years dominated the sports world as the " +
+        "sports with the most valued players in the world, this is reflected in the year wise " +
+        "break down of highest paid sport athletes in those sports area in a given year range.   " +
+        "Since the start of data collection - starting with the 1990's  " + 
+        "the highest paid athletes for most years have either played in the field of Boxing or played Golf. ");
+        currYear = "1990";
+        
+        document.getElementById("slide0dd").style.display = "inline";
+        document.getElementById("slide1dd").style.display = "none";
+        document.getElementById("slide2dd").style.display = "none";
+        document.getElementById("slide3dd").style.display = "none";
+        //slide2dd
+        slideId = 0;
+        reDraw();
+    }
+
+    function changeYearTo1993() {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.select("#descText").html("This trend was broken with Michael Jordan (Basketball) for a period from 1993 to 1994 " +
+        " when Basketball slightly overtook Boxing " +
+        " to become the sport with highest paid athlete. ");
+        currYear = "1993";
+        document.getElementById("slide0dd").style.display = "none";
+        document.getElementById("slide1dd").style.display = "inline";
+        document.getElementById("slide2dd").style.display = "none";
+        document.getElementById("slide3dd").style.display = "none";
+        slideId = 1;
+        reDraw();
+    }
+
+    function changeToYear(year) {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.selectAll(".annotation-group > *").remove(); 
+        currYear = year;
+        slideId = 1;
+        reDraw();
+    }
+
+    function getMax(arr, prop) {
+        var max;
+        for (var i=0 ; i<arr.length ; i++) {
+            if (max == null || parseInt(arr[i][prop]) > parseInt(max[prop]))
+                max = arr[i];
+        }
+        return max;
+    }
+
+    function changeYearTo1996() {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.select("#descText").html("This trend was restored with Mike Tyson (Boxing) for a period from 1996 " +
+        " when Boxing again overtook Basketball " +
+        " to become the sport with highest paid athlete. ");
+        currYear = "1996";
+        slideId = 2;
+        document.getElementById("slide0dd").style.display = "none";
+        document.getElementById("slide1dd").style.display = "none";
+        document.getElementById("slide2dd").style.display = "none";
+        document.getElementById("slide3dd").style.display = "none";
+        reDraw();
+    }
+
+    function changeYearTo2001() {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.select("#descText").html("This trend was continued in 2001 when Tiger Woods (Golf) became the highest paid athletes  ");
+        currYear = "2002";
+        slideId = 3;
+        document.getElementById("slide0dd").style.display = "none";
+        document.getElementById("slide1dd").style.display = "none";
+        document.getElementById("slide2dd").style.display = "inline";
+        document.getElementById("slide3dd").style.display = "none";
+        reDraw();
+    }
+
+    function changeYearTo2011() {
+        d3.selectAll("g > *").remove();
+        d3.select("#dropdown_container").html("");
+        d3.select("#descText").html("This trend continued again in 2011 when Floyd Mayweather (Boxing) again took the title of the most valued player");
+        currYear = "2012";
+        slideId = 4;
+        document.getElementById("slide0dd").style.display = "none";
+        document.getElementById("slide1dd").style.display = "none";
+        document.getElementById("slide2dd").style.display = "none";
+        document.getElementById("slide3dd").style.display = "inline";
+        reDraw();
+    }
+
+    function reDraw(sport) {
+                // Parse the Data
+                d3.csv("https://raw.githubusercontent.com/spravin123/narrativeviz/master/forbesathletesv2.csv", function(data) {
+                    updateData(data,null,sport);
+                });
+             
+
+                    var ddData = [
+                        "All",
+                        "Boxing",
+                        "Racing",
+                        "Golf",
+                        "Basketball",
+                        "Tennis",
+                        "Soccer",
+                        "Baseball",
+                        "Football",
+                        "Cycling"
+                    ];
+                    d3.select("#dropdown_container").html("");
+                    var dropDown = d3.select("#dropdown_container")
+                    .append("select")
+                    .attr("class", "selection")
+                    .attr("name", "sports-list")
+                    .on("change", function() { 
+                            var spVal = d3.select(this).property('value');
+                        // Parse the Data
+                            d3.csv("https://raw.githubusercontent.com/spravin123/narrativeviz/master/forbesathletesv2.csv", function(data) {
+                                data = data.filter(function(d) 
+                                { 
+                                    if( d["Year"] == currYear) 
+                                    { 
+                                        return d;
+                                    } 
+                                });
+                            
+                            var newdata = {};
+                            if (spVal != "All") {
+                                newdata = data.filter(function(d) 
+                                { 
+                        
+                                    if( d["Sport"] == spVal)   {
+                                        return d;
+                                    }else {
+                                        return null;
+                                    }
+                        
+                                });
+                            }else {
+                                newdata = data;
+                            }
+                    
+                        
+                        d3.selectAll("g > *").remove();
+                        var svg = d3.select("#my_dataviz")
+                            .append("svg")
+                            .attr("width", 800)
+                            .attr("height", height + margin.top + margin.bottom)
+                            .append("g")
+                            .attr("transform",
+                                "translate(" + margin.left + "," + margin.top + ")");
+
+                        
+                        updateData(newdata,spVal,sport);
+
+                    })
+                
+                });
+                
+            var options = dropDown.selectAll("option")
+                .data(ddData)
+                .enter()
+                .append("option");
+                options.text(function(d) {
+                    return d;
+                })
+                .attr("value", function(d) {
+                    return d;
+                });
+
+                
+
+
+        //---------------------------------------------------------------
+     
+    }
+
+
+    function updateData(data,showAnnot,sport) {
+
+        d3.selectAll(".annotation-group > *").remove(); 
+        d3.selectAll("g > *").remove(); 
+        data = data.filter(function(d) 
+        { 
+    
+            if( d["Year"] == currYear)      
+            { 
+                return d;
+            } 
+    
+        });
+    
+
+        data.sort(function(x, y){
+            return y["Earnings"]- x["Earnings"];
+        });
+
+        var maxData = getMax(data,'Earnings')
+        //width = maxData.Earnings;
+        
+        data = data.slice(0,10);
+                // Add X axis
+        var x = d3.scaleLinear()
+            .domain([0, maxData.Earnings])
+            .range([ 0, width]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x))
+            .attr("class", "x-axis");
+
+
+        // Add the x Axis
+        svg.append("g")
+         .attr("transform", "translate(0," + height + ")")
+         .call(d3.axisBottom(x));
+
+        // text label for the x axis
+        svg.append("text")             
+            .attr("transform",
+            "translate(" + (width/2) + " ," + 
+                           (height + margin.top + 20) + ")")
+            .style("text-anchor", "middle")
+            .text("Earnings in millions");
+
+
+        
+        // Y axis
+        var y = d3.scaleBand()
+            .range([ 0, height ])
+            .domain(data.map(function(d) { return d.Name+"(" + d.Sport +")"; }))
+            .padding(.1);
+
+        if (sport) {
+            y = d3.scaleBand()
+            .range([ 0, height ])
+            .domain(data.map(function(d) { return d.Sport; }))
+            .padding(.1);
+        }
+
+        svg.append("g")
+            .call(d3.axisLeft(y))
+        
+
+        // text label for the y axis
+        svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Athlete");      
+        
+
+        var tooltip = d3.select("body")
+        .append("div")
+        .style("position", "absolute")
+        .style("z-index", "10")
+        .style("visibility", "hidden")
+        .style("background", "#00FF00")
+        .text("a simple tooltip");
+
+        //Bars
+        svg.selectAll("myRect")
+            .data(data)
+            .enter()
+            .append("g")
+            .append("rect")
+            .attr("x", 0 )
+            .attr("y", function(d) {
+                if (sport) {
+                    return y(d.Sport); 
+                }else {
+                    return y(d.Name+"(" + d.Sport +")"); 
+                }
+                 
+            })
+            .attr("width", function(d) { return x(d.Earnings); })
+            .attr("height", y.bandwidth() + 1 )
+            .attr("fill", function(d) {
+                if (d.Sport == "Boxing") {
+                    return "#2ea4ea";
+                }else if (d.Sport == "Racing") {
+                    return "#eb1560";
+                }else if (d.Sport == "Golf") {
+                    return "#f78f12";
+                }else if (d.Sport == "Basketball") {
+                    return "#20c02d"; 
+                }else if (d.Sport == "Tennis") {
+                    return "#8031eb"; 
+                }else if (d.Sport == "Soccer") {
+                    return "#F0F8FF"; 
+                }else if (d.Sport == "Baseball") {
+                    return "#FFA500"; 
+                }else if (d.Sport == "Football") {
+                    return "#C3FDB8"; 
+                }else if (d.Sport == "Cycling") {
+                    return "#C39BD3"; 
+                }else if (d.Sport == "Hockey") {
+                    return "#C39BD3"; 
+                }
+            })
+            .on("mouseover", function(d){tooltip.html("Name:" + d.Name + " <br> Sports:" + d.Sport + " <br> Earnings(million):" + d.Earnings); return tooltip.style("visibility", "visible");})
+            .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
+            .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+
+
+            annotateLogic(showAnnot);
+        
+     
+
+        //d3.select("#my_dataviz").select("svg").call(zoom);
+        
+        
+        d3.select("svg")
+        .call(d3.zoom().on("zoom", function () {
+              svg.attr("transform", d3.event.transform)
+         }))
+        .append("g");
+
+    }
+
+
+        function annotateLogic(showAnnot) {
+            const annotation1 = [
+                {
+                    note: {
+                        label: "Mike Tyson and Buster Douglas were the highest earners in the 90's",
+                        title: "Highest earners in 1990",
+                        wrap: 150,
+                        align: "left"
+                    },
+                    connector: {
+                        end: "arrow" // 'dot' also available
+                    },
+                    x: 190,
+                    y: 40,
+                    dy: 15,
+                    dx: 45
+            }
+            ].map(function(d){ d.color = "black"; return d})
+            const annotation2 = [
+            {
+                    note: {
+                        label: "Michael Jordan (Basketball) was the highest earner from 1993 - 1996",
+                        title: "Highest earners in (1993 - 1995)",
+                        wrap: 150,
+                        align: "left"
+                    },
+                    connector: {
+                        end: "arrow" // 'dot' also available
+                    },
+                    x: 190,
+                    y: 40,
+                    dy: 15,
+                    dx: 45
+            }
+            ].map(function(d){ d.color = "black"; return d})
+
+            const annotation3 = [
+            {
+                    note: {
+                        label: "Mike Tyson regained the title spot to be the highest earners in 1996",
+                        title: "Highest earners in 1996",
+                        wrap: 150,
+                        align: "left"
+                    },
+                    connector: {
+                        end: "arrow" // 'dot' also available
+                    },
+                    x: 190,
+                    y: 40,
+                    dy: 15,
+                    dx: 45
+            }
+            ].map(function(d){ d.color = "black"; return d})
+
+            const annotation4 = [
+            {
+                    note: {
+                        label: "Tiger Woods acquired the spot of the world's number 1 paid athlete",
+                        title: "Highest earners in ( 2001 to 2011 )",
+                        wrap: 150,
+                        align: "left"
+                    },
+                    connector: {
+                        end: "arrow" // 'dot' also available
+                    },
+                    x: 190,
+                    y: 40,
+                    dy: 15,
+                    dx: 45
+            }
+            ].map(function(d){ d.color = "black"; return d})
+
+            const annotation5 = [
+            {
+                    note: {
+                        label: "Floyd Mayweather(Boxing) re-acquired the spot of the world's number 1 paid athlete",
+                        title: "Highest earners (2011 - 2019)",
+                        wrap: 150,
+                        align: "left"
+                    },
+                    connector: {
+                        end: "arrow" // 'dot' also available
+                    },
+                    x: 190,
+                    y: 40,
+                    dy: 15,
+                    dx: 45
+            }
+
+            
+            ].map(function(d){ d.color = "black"; return d})
+
+            const annotation6 = [
+            {
+                    note: {
+                        label: "Jack Nicklaus and Greg Norman for Golf - came third in terms of actual individual pay ",
+                        title: "Highest earners in 1990",
+                        wrap: 150,
+                        align: "left"
+                    },
+                    connector: {
+                        end: "arrow" // 'dot' also available
+                    },
+                    x: 190,
+                    y: 310,
+                    dy: 15,
+                    dx: 45
+            }
+            ].map(function(d){ d.color = "black"; return d})
+
+
+
+            var effAnnot = null;
+            if (slideId == 0) {
+                effAnnot = annotation1;
+            }else if (slideId == 1) {
+                effAnnot = annotation2;
+            }else if (slideId == 2) {
+                effAnnot = annotation3;
+            }else if (slideId == 3) {
+                effAnnot = annotation4;
+            }else if (slideId == 4) {
+                effAnnot = annotation5;
+            }
+            
+            if (showAnnot == "Boxing" || showAnnot == "All" || !showAnnot) {
+                const makeAnnotations = d3.annotation()
+                .type(d3.annotationLabel)
+                .annotations(effAnnot);
+
+                if (slideId == 0) {
+                    makeAnnotations6 = d3.annotation()
+                        .type(d3.annotationLabel)
+                        .annotations(annotation6);
+                    d3.select("svg")
+                        .append("g")
+                        .attr("class", "annotation-group")
+                        .call(makeAnnotations6);
+
+                }
+
+                d3.select("svg")
+                .append("g")
+                .attr("class", "annotation-group")
+                .call(makeAnnotations);
+            }
+
+            d3.select("#currYear").html(currYear);
+
+            
+        }
+
+    
+  </script>
+    </html>
