@@ -1,15 +1,21 @@
 <html>
     <style>
         .button {
-            background-color: #4CAF50; /* Green */
+            background-color: #38387b; /* Green */
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 10px 16px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
         }
+
+        circle {
+	        fill: #6D597A;
+	        opacity: 0.7;
+        }
+
     </style>
     <script src="https://d3js.org/d3.v4.js"></script>
 <!-- Load d3-annotation -->
@@ -29,11 +35,11 @@
         the highest paid athletes for most years have either played in the field of Boxing or played Golf. 
     </div>
     <div id="legend"></div>
-    <button type="button" class="button" onclick="changeYearTo1990()">Slide 1 - 1990 to 1992</button>
-    <button type="button" class="button" onclick="changeYearTo1993()">Slide 2 - 1993 to 1995</button>
-    <button type="button" class="button" onclick="changeYearTo1996()">Slide 3 - 1996</button>
-    <button type="button" class="button" onclick="changeYearTo2001()">Slide 4 - 2001 to 2011</button>
-    <button type="button" class="button" onclick="changeYearTo2011()">Slide 5 - 2011 to 2019</button>
+    <button type="button" class="button" onclick="changeYearTo1990()">1 - 1990 to 1992</button>
+    <button type="button" class="button" onclick="changeYearTo1993()">2 - 1993 to 1995</button>
+    <button type="button" class="button" onclick="changeYearTo1996()">3 - 1996</button>
+    <button type="button" class="button" onclick="changeYearTo2001()">4 - 2001 to 2011</button>
+    <button type="button" class="button" onclick="changeYearTo2011()">5 - 2011 to 2019</button>
     <p/>
     <div style="height:30px; width:800px;"">Filter highest paid athletes by a specific Sport:<span style="text-align: left;" id="dropdown_container"></span></div>
     <p/>
@@ -45,7 +51,7 @@
     <p/>
     <div style="height:30px; width:800px;display: none;" id="slide0dd">
         Subfilter to change from years (1990 - 1992) <span style="text-align: left;" id="slide0Dd">
-        <select id="innerYear" onchange="changeDD(this.value)">
+        <select id="innerYear0" onchange="changeDD(this.value)">
             <option value="">-</option>
             <option value="1991">1991</option>
             <option value="1992">1992</option>
@@ -53,7 +59,7 @@
     </div>
     <div style="height:30px; width:800px;display: none;" id="slide1dd">
         Subfilter to change from years (1993 - 1995) <span style="text-align: left;" id="slide2Dd">
-        <select id="innerYear" onchange="changeDD(this.value)">
+        <select id="innerYear1" onchange="changeDD(this.value)">
             <option value="">-</option>
             <option value="1993">1993</option>
             <option value="1994">1994</option>
@@ -91,7 +97,14 @@
         </select></span>
     </div>
     <div>Current Year: <span id="currYear"></span></div>
-    <div id="my_dataviz" width="800" height="600"></div>
+
+    <div style="width: 100%;">
+    <div style="width: 60%; float: left; " id="my_dataviz" width="800" height="600"></div>
+
+    <div style="margin-left: 40%; height: 100px;"  width="100" height="300">
+        <svg id="legendSvg" height=300 width=550></svg>
+    </div>
+    </div>
     <script>
     var tooplTipDiv = d3.select("body").append("div")   
                             .attr("id", "myTooltip")               
@@ -161,6 +174,7 @@
         document.getElementById("slide3dd").style.display = "none";
         slideId = 1;
         reDraw();
+        triggerTransition();
     }
 
     function changeToYear(year) {
@@ -394,11 +408,16 @@
         .text("a simple tooltip");
 
         //Bars
-        svg.selectAll("myRect")
+        var bars = svg.selectAll("myRect")
             .data(data)
             .enter()
             .append("g")
             .append("rect")
+            .on("mouseover", function(d){tooltip.html("Name:" + d.Name + " <br> Sports:" + d.Sport + " <br> Earnings(million):" + d.Earnings); return tooltip.style("visibility", "visible");})
+            .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
+            .on("mouseout", function(){return tooltip.style("visibility", "hidden");})
+            .transition()
+            .duration(2000)
             .attr("x", 0 )
             .attr("y", function(d) {
                 if (sport) {
@@ -432,11 +451,12 @@
                 }else if (d.Sport == "Hockey") {
                     return "#C39BD3"; 
                 }
-            })
-            .on("mouseover", function(d){tooltip.html("Name:" + d.Name + " <br> Sports:" + d.Sport + " <br> Earnings(million):" + d.Earnings); return tooltip.style("visibility", "visible");})
-            .on("mousemove", function(){return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-            .on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+            });
+           
 
+            //bars
+            
+            
 
             annotateLogic(showAnnot);
         
@@ -603,9 +623,72 @@
 
             d3.select("#currYear").html(currYear);
 
-            
+           
         }
 
+        function triggerTransition(){
+            d3.select("#myRect")
+                .transition()
+                .delay(100)
+                .duration(2000)
+                .attr("width", "400")
+        }
     
+        var legendSvg = d3.select("#legendSvg")
+
+// create a list of keys
+var keys = ["Boxing", "Racing", "Golf", "Basketball", "Tennis","Soccer","Baseball","Football","Cycling","Hockey"];
+
+// Usually you have a color scale in your chart already
+
+
+// Add one dot in the legend for each name.
+var size = 20;
+legendSvg.selectAll("mydots")
+  .data(keys)
+  .enter()
+  .append("rect")
+    .attr("x", 400)
+    .attr("y", function(d,i){ return 100 + i*(size+5)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .attr("width", size)
+    .attr("height", size)
+    .style("fill", function(d){ return colorKey(d)});
+
+// Add one dot in the legend for each name.
+legendSvg.selectAll("mylabels")
+  .data(keys)
+  .enter()
+  .append("text")
+    .attr("x", 400 + size*1.2)
+    .attr("y", function(d,i){ return 100 + i*(size+5) + (size/2)}) // 100 is where the first dot appears. 25 is the distance between dots
+    .style("fill", function(d){ return colorKey(d)})
+    .text(function(d){ return d})
+    .attr("text-anchor", "left")
+    .style("alignment-baseline", "middle");
+
+
+ function colorKey(sport) {
+    if (sport == "Boxing") {
+        return "#2ea4ea";
+    }else if (sport == "Racing") {
+        return "#eb1560";
+    }else if (sport == "Golf") {
+        return "#f78f12";
+    }else if (sport == "Basketball") {
+        return "#20c02d"; 
+    }else if (sport == "Tennis") {
+        return "#8031eb"; 
+    }else if (sport == "Soccer") {
+        return "#F0F8FF"; 
+    }else if (sport == "Baseball") {
+        return "#FFA500"; 
+    }else if (sport == "Football") {
+        return "#C3FDB8"; 
+    }else if (sport == "Cycling") {
+        return "#C39BD3"; 
+    }else if (sport == "Hockey") {
+        return "#C39BD3"; 
+    }
+ }
   </script>
     </html>
